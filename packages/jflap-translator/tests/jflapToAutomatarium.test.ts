@@ -3,7 +3,7 @@ import { readFileSync } from 'fs'
 import { Project } from 'frontend/src/types/ProjectTypes'
 
 const readProject = (name: string): Project => {
-  return convertJFLAPXML(readFileSync('tests/sample-data/' + name + '.jff').toString())
+  return convertJFLAPXML(readFileSync('tests/sample-jflap-data/' + name + '.jff').toString())
 }
 
 describe('Importing single attribute', () => {

@@ -1,0 +1,28 @@
+{
+  "projectType": "FSA",
+  "states": [
+    {
+      "x": 100,
+      "y": 150,
+      "id": 0,
+      "isFinal": false
+    }
+  ],
+  "transitions": [],
+  "comments": [],
+  "simResult": [],
+  "tests": {
+    "single": "",
+    "batch": [
+      ""
+    ]
+  },
+  "initialState": 0,
+  "config": {
+    "type": "FSA",
+    "statePrefix": "x",
+    "orOperator": "|",
+    "acceptanceCriteria": "both",
+    "color": "orange"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "projectType": "FSA",
+  "_id": "7c294015-04bf-4431-a6f9-7800da5dd154",
+  "states": [
+    {
+      "x": 660,
+      "y": 510,
+      "id": 0,
+      "isFinal": false
+    },
+    {
+      "x": 660,
+      "y": 510,
+      "id": 1,
+      "isFinal": true
+    },
+    {
+      "x": 660,
+      "y": 510,
+      "id": 2,
+      "isFinal": true
+    }
+  ],
+  "transitions": [
+    {
+      "from": 0,
+      "to": 1,
+      "id": 0,
+      "read": "[a-c]"
+    },
+    {
+      "from": 0,
+      "to": 2,
+      "id": 1,
+      "read": "[b-c]"
+    }
+  ],
+  "comments": [],
+  "simResult": [],
+  "tests": {
+    "single": "a",
+    "batch": [
+      ""
+    ]
+  },
+  "initialState": 0,
+  "meta": {
+    "name": "nfaWithRange",
+    "dateCreated": 1722250130012,
+    "dateEdited": 1722250130012,
+    "version": "1.0.0",
+    "automatariumVersion": "1.0.0"
+  },
+  "config": {
+    "type": "FSA",
+    "statePrefix": "q",
+    "orOperator": "|",
+    "acceptanceCriteria": "both",
+    "color": "orange"
+  }
+}

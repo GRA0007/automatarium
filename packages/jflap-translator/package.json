@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "frontend": "1.0.0",
-    "xml-js": "^1.6.11"
+    "xml-js": "^1.6.11",
+    "@automatarium/simulation": "2.0.0"
   }
 }

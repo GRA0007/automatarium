@@ -1,0 +1,47 @@
+{
+  "projectType": "FSA",
+  "_id": "f9bf17f9-fc85-41ed-b050-b87c06d69b6c",
+  "states": [
+    {
+      "x": 315,
+      "y": 330,
+      "id": 0,
+      "isFinal": false
+    },
+    {
+      "x": 315,
+      "y": 330,
+      "id": 1,
+      "isFinal": false
+    },
+    {
+      "x": 315,
+      "y": 330,
+      "id": 2,
+      "isFinal": false
+    }
+  ],
+  "transitions": [
+    {
+      "from": 0,
+      "to": 1,
+      "id": 0,
+      "read": "ab"
+    },
+    {
+      "from": 0,
+      "to": 2,
+      "id": 1,
+      "read": "b"
+    }
+  ],
+  "comments": [],
+  "simResult": [],
+  "tests": {
+    "single": "",
+    "batch": [
+      ""
+    ]
+  },
+  "initialState": 0
+}

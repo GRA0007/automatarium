@@ -5,7 +5,7 @@ import { Logo } from '/src/components'
 
 import { MoreVertical, Trash } from 'lucide-react'
 import { ButtonHTMLAttributes, Ref } from 'react'
-import { CardContainer, CardDetail, CardImage, SelectedTemplateOverlay, TitleAndKebab, TypeBadge } from './projectCardStyle'
+import { CardContainer, CardDetail, CardImage, SelectedTemplateOverlay, TitleWithAction, TypeBadge } from './projectCardStyle'
 import { ProjectType } from '/src/types/ProjectTypes'
 dayjs.extend(relativeTime)
 
@@ -36,7 +36,7 @@ const ProjectCard = ({ name, type, date, image, isSelectedTemplate = false, ...p
       {isSelectedTemplate && <SelectedTemplateOverlay/>}
     </CardImage>
     <CardDetail>
-      <TitleAndKebab>
+      <TitleWithAction>
         <strong>{name}</strong>
         {props.$istemplate
           ? <div>
@@ -46,10 +46,10 @@ const ProjectCard = ({ name, type, date, image, isSelectedTemplate = false, ...p
           </div>
           : <div>
             <a onClick={props.$kebabClick} ref={props.$kebabRef}>
-              <MoreVertical/>
+              <MoreVertical />
             </a>
           </div>}
-      </TitleAndKebab>
+      </TitleWithAction>
       {date && <span>{date instanceof dayjs ? dayjs().to(date) : date as string}</span>}
     </CardDetail>
   </CardContainer>

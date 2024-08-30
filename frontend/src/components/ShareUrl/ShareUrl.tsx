@@ -14,15 +14,17 @@ const ShareUrl = () => {
 
   const [base64Project, setBase64Project] = useState('')
 
-  if (base64Project === '') {
-    encodeData(project).then(setBase64Project)
-  }
-
   const shareRawLink = `${window.location.origin}/share/raw/${base64Project}`
 
   const [exportUrlOpen, setExportUrlOpen] = useState(false)
   const [copySuccess, setCopySuccess] = useState(false)
   const [dataCopySuccess, setDataCopySuccess] = useState(false)
+
+  useEffect(() => {
+    if (exportUrlOpen) {
+      encodeData(project).then(setBase64Project)
+    }
+  }, [exportUrlOpen])
 
   const handleClose = () => {
     setExportUrlOpen(false)

@@ -47,7 +47,7 @@ const Editor = () => {
   const projectType = project.config.type
 
   // Auto save project as its edited
-  useAutosaveProject()
+  const isSaving = useAutosaveProject()
 
   // Register action hotkey
   useActions(true)
@@ -103,7 +103,7 @@ const Editor = () => {
 
   return (
     <>
-      <Menubar />
+      <Menubar isSaving={isSaving} />
       <Content>
         <Toolbar />
         <EditorContent>
@@ -122,7 +122,6 @@ const Editor = () => {
       <FinalStatePopup />
 
       <ExportImage />
-m
       <ShareUrl />
 
       <TemplateDelConfDialog

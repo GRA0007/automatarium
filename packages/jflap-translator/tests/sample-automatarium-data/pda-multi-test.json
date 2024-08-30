@@ -1,0 +1,73 @@
+{
+  "projectType": "PDA",
+  "states": [
+    {
+      "x": 100,
+      "y": 150,
+      "id": 0,
+      "isFinal": false
+    },
+    {
+      "x": 300,
+      "y": 150,
+      "id": 1,
+      "isFinal": false
+    },
+    {
+      "x": 100,
+      "y": 300,
+      "id": 2,
+      "isFinal": true
+    }
+  ],
+  "transitions": [
+    {
+      "from": 0,
+      "to": 0,
+      "id": 0,
+      "read": "(",
+      "pop": "",
+      "push": "A"
+    },
+    {
+      "from": 0,
+      "to": 1,
+      "id": 1,
+      "read": "[a-d]",
+      "pop": "",
+      "push": ""
+    },
+    {
+      "from": 1,
+      "to": 1,
+      "id": 2,
+      "read": ")",
+      "pop": "A",
+      "push": ""
+    },
+    {
+      "from": 1,
+      "to": 2,
+      "id": 3,
+      "read": "",
+      "pop": "",
+      "push": ""
+    }
+  ],
+  "comments": [],
+  "simResult": [],
+  "tests": {
+    "single": "",
+    "batch": [
+      ""
+    ]
+  },
+  "initialState": 0,
+  "config": {
+    "type": "PDA",
+    "statePrefix": "q",
+    "orOperator": "|",
+    "acceptanceCriteria": "both",
+    "color": "red"
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "projectType": "FSA",
+  "states": [
+    {
+      "x": 100,
+      "y": 150,
+      "id": 0,
+      "isFinal": false,
+      "name": "blank",
+      "label": "blank label"
+    },
+    {
+      "x": 300,
+      "y": 150,
+      "id": 1,
+      "isFinal": true
+    }
+  ],
+  "transitions": [
+    {
+      "from": 0,
+      "to": 1,
+      "id": 0,
+      "read": "a"
+    },
+    {
+      "from": 1,
+      "to": 1,
+      "id": 1,
+      "read": ""
+    }
+  ],
+  "comments": [
+    {
+      "x": 300,
+      "y": 300,
+      "text": "test comment",
+      "id": 0
+    }
+  ],
+  "simResult": [],
+  "tests": {
+    "single": "",
+    "batch": [
+      ""
+    ]
+  },
+  "initialState": 0,
+  "config": {
+    "type": "FSA",
+    "statePrefix": "q",
+    "orOperator": "|",
+    "acceptanceCriteria": "both",
+    "color": "orange"
+  }
+}

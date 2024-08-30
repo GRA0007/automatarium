@@ -1,0 +1,131 @@
+{
+  "projectType": "FSA",
+  "_id": "7c294015-04bf-4431-a6f9-7800da5dd154",
+  "states": [
+    {
+      "id": 0,
+      "label": "0",
+      "x": 660,
+      "y": 510,
+      "isFinal": false
+    },
+    {
+      "id": 1,
+      "label": "1, 2",
+      "x": 660,
+      "y": 510,
+      "isFinal": true
+    },
+    {
+      "id": 2,
+      "label": "Trap",
+      "x": 660,
+      "y": 510,
+      "isFinal": false
+    },
+    {
+      "id": 3,
+      "label": "1",
+      "x": 660,
+      "y": 510,
+      "isFinal": true
+    }
+  ],
+  "transitions": [
+    {
+      "id": 0,
+      "from": 0,
+      "to": 3,
+      "read": "a"
+    },
+    {
+      "id": 1,
+      "from": 0,
+      "to": 1,
+      "read": "b"
+    },
+    {
+      "id": 2,
+      "from": 0,
+      "to": 1,
+      "read": "c"
+    },
+    {
+      "id": 3,
+      "from": 1,
+      "to": 2,
+      "read": "a"
+    },
+    {
+      "id": 4,
+      "from": 1,
+      "to": 2,
+      "read": "b"
+    },
+    {
+      "id": 5,
+      "from": 1,
+      "to": 2,
+      "read": "c"
+    },
+    {
+      "id": 6,
+      "from": 2,
+      "to": 2,
+      "read": "a"
+    },
+    {
+      "id": 7,
+      "from": 2,
+      "to": 2,
+      "read": "b"
+    },
+    {
+      "id": 8,
+      "from": 2,
+      "to": 2,
+      "read": "c"
+    },
+    {
+      "id": 9,
+      "from": 3,
+      "to": 2,
+      "read": "a"
+    },
+    {
+      "id": 10,
+      "from": 3,
+      "to": 2,
+      "read": "b"
+    },
+    {
+      "id": 11,
+      "from": 3,
+      "to": 2,
+      "read": "c"
+    }
+  ],
+  "comments": [],
+  "simResult": [],
+  "tests": {
+    "single": "a",
+    "batch": [
+      ""
+    ]
+  },
+  "initialState": 0,
+  "meta": {
+    "name": "nfaWithRangeExpected",
+    "dateCreated": 1722250130012,
+    "dateEdited": 1722250348951,
+    "version": "1.0.0",
+    "automatariumVersion": "1.0.0"
+  },
+  "config": {
+    "type": "FSA",
+    "statePrefix": "q",
+    "orOperator": "|",
+    "acceptanceCriteria": "both",
+    "color": "orange"
+  }
+}

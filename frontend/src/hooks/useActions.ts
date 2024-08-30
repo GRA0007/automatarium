@@ -1,7 +1,7 @@
 import { MouseEvent, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-import { convertJFLAPXML } from '@automatarium/jflap-translator'
+import { convertJFLAPXML, convertAutomatariumToJFLAP } from '@automatarium/jflap-translator'
 import autoLayout from '@automatarium/simulation/src/autoLayout'
 import { convertNFAtoDFA } from '@automatarium/simulation/src/convert'
 import { reorderStates } from '@automatarium/simulation/src/reorder'
@@ -167,8 +167,20 @@ const useActions = (registerHotkeys = false) => {
       handler: () => dispatchCustomEvent('exportImage', { type: 'png', clipboard: true })
     },
     EXPORT_AS_JFLAP: {
-      disabled: () => true,
-      handler: () => console.log('Export JFLAP')
+      hotkeys: [{ key: 's', shift: true, alt: true, meta: true }],
+      handler: () => {
+        // Pull project state
+        const project = useProjectStore.getState().project
+
+        // Create a download link and use it
+        const a = document.createElement('a')
+        // Convert current project to JFLAP format
+        const jflapFile = new Blob([convertAutomatariumToJFLAP(project)])
+        a.href = URL.createObjectURL(jflapFile)
+        // File extension explicitly added to allow for file names with dots
+        a.download = project.meta.name.replace(/[#%&{}\\<>*?/$!'":@+`|=]/g, '') + '.jff'
+        a.click()
+      }
     },
     OPEN_PREFERENCES: {
       hotkeys: [{ key: ',', meta: true }],
@@ -597,7 +609,7 @@ export const useParseFile = <T>(onData: (val: T) => void, errorMessage: string, 
         ...project,
         meta: {
           ...project.meta,
-          name: project.meta.name ?? input?.name.split('.').slice(0, -1).join('.')
+          name: project.meta.name || input?.name.split('.').slice(0, -1).join('.')
         }
       })
       onFinishLoading()

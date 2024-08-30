@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, HTMLAttributes } from 'react'
+import { useState, useEffect, useRef, HTMLAttributes } from 'react'
 import { useNavigate } from 'react-router-dom'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -61,7 +61,7 @@ const DropdownButton = ({ item, dropdown, setDropdown, ...props }: DropdownButto
   )
 }
 
-const Menubar = () => {
+const Menubar = ({ isSaving }: { isSaving: boolean }) => {
   const navigate = useNavigate()
   const [dropdown, setDropdown] = useState<string>()
 
@@ -71,13 +71,11 @@ const Menubar = () => {
 
   const projectName = useProjectStore(s => s.project?.meta?.name)
   const setProjectName = useProjectStore(s => s.setName)
+  const lastChangeDate = useProjectStore(s => s.lastChangeDate)
+  const lastSaveDate = useProjectStore(s => s.lastSaveDate)
   const setLastSaveDate = useProjectStore(s => s.setLastSaveDate)
   const upsertProject = useProjectsStore(s => s.upsertProject)
-
-  const lastSaveDate = useProjectStore(s => s.lastSaveDate)
-  const lastChangeDate = useProjectStore(s => s.lastChangeDate)
-  // Determine whether saving
-  const isSaving = useMemo(() => !(!lastChangeDate || dayjs(lastSaveDate).isAfter(lastChangeDate)), [lastChangeDate, lastSaveDate])
+  const deleteProject = useProjectsStore(s => s.deleteProject)
 
   const handleEditProjectName = () => {
     setTitleValue(projectName ?? '')
@@ -100,10 +98,10 @@ const Menubar = () => {
   }
 
   useEvent('beforeunload', e => {
-    if (!isSaving) return
+    if (lastSaveDate > lastChangeDate) return
     e.preventDefault()
     return 'Your project isn\'t saved yet, are you sure you want to leave?'
-  }, [isSaving], { options: { capture: true }, target: window })
+  }, [lastSaveDate, lastChangeDate], { options: { capture: true }, target: window })
 
   return (
     <>
@@ -111,9 +109,12 @@ const Menubar = () => {
         <Menu>
           <a href="/new" onClick={e => {
             e.preventDefault()
-            if (isSaving) {
-              // If there are unsaved changes, save and then navigate
+            const project = useProjectStore.getState().project
+            const totalItems = project.comments.length + project.states.length + project.transitions.length
+            if (totalItems > 0) {
               saveProject()
+            } else {
+              deleteProject(project._id)
             }
             navigate('/new')
           }}>
