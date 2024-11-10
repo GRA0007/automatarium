@@ -10,7 +10,7 @@ import stateAnimation from '../../../components/Toolbar/animations/state.json'
 import transitionAnimation from '../../../components/Toolbar/animations/transition.json'
 import commentAnimation from '../../../components/Toolbar/animations/comment.json'
 
-import { MousePointer2, Hand, MessageSquare, Circle, ArrowUpRight, FlaskConical, Info as InfoIcon, Settings2, Star } from 'lucide-react'
+import { MousePointer2, Hand, MessageSquare, Circle, ArrowUpRight, FlaskConical, Info as InfoIcon, Settings2, Star, GraduationCap } from 'lucide-react'
 
 import { Info } from '/src/components/Sidepanel/Panels'
 
@@ -129,8 +129,11 @@ const EditorPageTour: React.FC<TourProps> = ({ onClose }) => {
       target: '',
       content: 'The Template option will allow you to save a template of states for future use. Here you can also access your saved templates.'
 
+    },
+    {
+      target: '',
+      content: 'The Create Module option allows you to create a new module, add custom questions and view the completed module.'
     }
-
     // Add more steps as needed
   ]
 
@@ -162,7 +165,8 @@ const EditorPageTour: React.FC<TourProps> = ({ onClose }) => {
     <FlaskConical key="FlaskConical" />,
     <InfoIcon key="InfoIcon" />,
     <Settings2 key="Settings" />,
-    <Star key="Star" />
+    <Star key="Star" />,
+    <GraduationCap key="GraduationCap" />
   ]
 
   const other = [<Info key="Info"/>]

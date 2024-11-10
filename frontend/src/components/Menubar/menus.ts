@@ -161,6 +161,10 @@ const menus: ContextItems = [
       {
         label: 'Templates',
         action: 'TEMPLATES'
+      },
+      {
+        label: 'Modules',
+        action: 'MODULES'
       }
     ]
   },

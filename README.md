@@ -70,6 +70,19 @@ Improved user experience with guided tours, added manual stepping, early halting
 
 </details>
 
+
+<details>
+<summary>Group 6 - 2024 Semester 2</summary>
+Added modules and support for sharing modules and improved the guided tours.
+  
+- [Aayushi Khatri](https://github.com/s3948240)
+- [Brian Tran](https://github.com/s3944192)
+- [Shourya Saini](https://github.com/shourya02)
+- [Liam Keenan](https://github.com/s3943923)
+- [Zicheng Hong](https://github.com/s3882476)
+</details>
+
+
 For a full list of contributors see: https://github.com/automatarium/automatarium/graphs/contributors
 
 ## License

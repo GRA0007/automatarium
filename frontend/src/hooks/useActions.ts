@@ -5,7 +5,7 @@ import { convertJFLAPXML, convertAutomatariumToJFLAP } from '@automatarium/jflap
 import autoLayout from '@automatarium/simulation/src/autoLayout'
 import { convertNFAtoDFA } from '@automatarium/simulation/src/convert'
 import { reorderStates } from '@automatarium/simulation/src/reorder'
-import { decodeData } from '../util/encoding'
+import { decodeData, decodeModule } from '../util/encoding'
 import useEdgeContext from './useEdgeContext'
 import { stopTemplateInsert } from '/src/components/Sidepanel/Panels/Templates/Templates'
 import { showWarning } from '/src/components/Warning/Warning'
@@ -15,6 +15,8 @@ import { InsertGroupResponseType, StoredProject, createNewProject } from '/src/s
 import { CopyData, FSAProjectGraph } from '/src/types/ProjectTypes'
 import { haveInputFocused } from '/src/util/actions'
 import { dispatchCustomEvent } from '/src/util/events'
+
+import useModuleStore, { createNewModule } from '../stores/useModuleStore'
 
 /**
  * Combination of keys. Used to call an action
@@ -109,7 +111,7 @@ const useActions = (registerHotkeys = false) => {
     IMPORT_AUTOMATARIUM_PROJECT: {
       hotkeys: [{ key: 'i', meta: true }],
       handler: async () => {
-        if (window.confirm('Importing will override your current project. Continue anyway?')) { promptLoadFile(setProject, 'Failed to open automatarium project', '.json') }
+        if (window.confirm('Importing will override your current project. Continue anyway?')) { promptLoadFile(setProject, 'Failed to open automatarium project', '.json,.ao') }
       }
     },
     IMPORT_JFLAP_PROJECT: {
@@ -121,6 +123,11 @@ const useActions = (registerHotkeys = false) => {
     IMPORT_DIALOG: {
       handler: async () => {
         if (window.confirm('Importing will override your current project. Continue anyway?')) { dispatchCustomEvent('modal:import', null) }
+      }
+    },
+    IMPORT_MODULE: {
+      handler: async () => {
+        if (window.confirm('Importing will override your current project. Continue anyway?')) { dispatchCustomEvent('modal:importModule', null) }
       }
     },
     SAVE_FILE: {
@@ -143,7 +150,7 @@ const useActions = (registerHotkeys = false) => {
         const file = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' })
         a.href = URL.createObjectURL(file)
         // File extension explicitly added to allow for file names with dots
-        a.download = project.meta.name.replace(/[#%&{}\\<>*?/$!'":@+`|=]/g, '') + '.json'
+        a.download = project.meta.name.replace(/[#%&{}\\<>*?/$!'":@+`|=]/g, '') + '.ao'
         a.click()
       }
     },
@@ -306,6 +313,10 @@ const useActions = (registerHotkeys = false) => {
     TEMPLATES: {
       hotkeys: [{ key: '4', shift: true }],
       handler: () => dispatchCustomEvent('sidepanel:open', { panel: 'templates' })
+    },
+    MODULES: {
+      hotkeys: [{ key: '5', shift: true }],
+      handler: () => dispatchCustomEvent('sidepanel:open', { panel: 'modules' })
     },
     CONVERT_TO_DFA: {
       disabled: () => projectType !== 'FSA' || project.initialState === null,
@@ -671,6 +682,82 @@ export const selectionToCopyTemplate = (stateIds: number[], commentIds: number[]
     projectSource: project._id,
     projectType: project.projectType,
     initialStateId: isInitialSelected ? project.initialState : null
+  }
+}
+
+// Functions for importing and exporting modules
+export const useParseModuleFile = <T>(onData: (val: T) => void, errorMessage: string, input: File, onFinishLoading: () => void, onFailedLoading: () => void) => {
+  // Read file data
+  const reader = new FileReader()
+  reader.onloadend = () => {
+    try {
+      const parse = JSON.parse
+      const fileData = parse(reader.result as string)
+      const module = {
+        ...createNewModule(),
+        ...fileData
+      }
+      onData({
+        ...module,
+        meta: {
+          ...module.meta,
+          name: module.meta.name || input?.name.split('.').slice(0, -1).join('.')
+        }
+      })
+      onFinishLoading()
+    } catch (error) {
+      showWarning(`${errorMessage}\n${error}`)
+      console.error(error)
+      onFailedLoading()
+    }
+  }
+  reader.readAsText(input)
+}
+
+export const promptLoadModuleFile = <T>(onData: (val: T) => void, errorMessage = 'Failed to parse file', accept: string, onFinishLoading = () => null, onFailedLoading = () => null) => {
+  // Prompt user for file input
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = accept
+  input.onchange = () => { useParseModuleFile(onData, errorMessage, input.files[0], onFinishLoading, onFailedLoading) }
+  input.click()
+}
+
+export const exportModuleFile = () => {
+  // Pull module state
+  const project = useModuleStore.getState().module
+
+  // Create a download link and use it
+  const a = document.createElement('a')
+  const file = new Blob([JSON.stringify(project, null, 2)], { type: 'application/json' })
+  a.href = URL.createObjectURL(file)
+  // File extension explicitly added to allow for file names with dots
+  a.download = project.meta.name.replace(/[#%&{}\\<>*?/$!'":@+`|=]/g, '') + '.aom'
+  a.click()
+}
+
+export const urlLoadModuleFile = <T>(url: string, onData: (val: T) => void, errorMessage = 'Failed to parse file.', onFinishLoading = () => null, onFailedLoading = () => null) => {
+  // Check that the user didn't just pass in the URL that was given from Automatarium
+  const urlTokens = url.split('/') ?? null
+  if (urlTokens[urlTokens.length - 3] === 'share' && urlTokens[urlTokens.length - 2] === 'module') {
+    decodeModule(urlTokens[urlTokens.length - 1]).then((data) => {
+      const asFile = new File([JSON.stringify(data)], 'Shared Project')
+      useParseFile(onData, errorMessage, asFile, onFinishLoading, onFailedLoading)
+    })
+  } else {
+    fetch(url)
+      .then(async (res) => {
+        const resUrlTokens = res.url.split('/')
+        const endpointName = decodeURIComponent(resUrlTokens[resUrlTokens.length - 1])
+        // Give a default filename based on the received URL
+        const asFile = new File([await res.blob()], endpointName)
+        useParseFile(onData, errorMessage, asFile, onFinishLoading, onFailedLoading)
+      })
+      .catch((error) => {
+        showWarning(`Failed to retrieve the file from this URL.\n${error}`)
+        console.error(error)
+        onFailedLoading()
+      })
   }
 }
 

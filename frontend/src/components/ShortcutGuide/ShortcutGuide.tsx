@@ -180,6 +180,10 @@ const shortcuts: Category[] = [
         action: 'TEMPLATES'
       },
       {
+        label: 'Modules',
+        action: 'MODULES'
+      },
+      {
         label: 'Move view',
         hotkeys: [{ key: '←' }, { key: '↑' }, { key: '→' }, { key: '↓' }]
       },

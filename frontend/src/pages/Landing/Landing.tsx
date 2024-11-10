@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
-import { Github } from 'lucide-react'
+import React, { useState } from 'react'
+import { Github, HelpCircle } from 'lucide-react'
 
 import { Sections, Section, Banner } from './landingStyle'
 import { Main, Button, Header, Table, ProjectCard } from '/src/components'
+import TourButton from '/src/components/TourButton/TourButton'
 
 import ExampleAutomaton from './components/ExampleAutomaton'
 import TestingLab from './components/TestingLab'
@@ -52,19 +53,6 @@ const Landing = () => {
     setShowTour(false)
     setStep(0)
   }
-
-  useEffect(() => {
-    // Set showTour to true after a delay (for demonstration purposes)
-    const tourShown = localStorage.getItem('tourShown')
-    if (!tourShown) {
-      const timeoutId = setTimeout(() => {
-        setShowTour(true)
-      }, 1000) // Adjust the delay as needed
-      localStorage.setItem('tourShown', 'true')
-      // Clean up the timeout on component unmount
-      return () => clearTimeout(timeoutId)
-    }
-  }, [])
 
   return (
   <Main fullWidth style={{ paddingBottom: 0 }}>
@@ -139,13 +127,16 @@ const Landing = () => {
           <h3>What are you waiting for?</h3>
           <p>Start building and testing your automata now!</p>
           <Button to="/new">Start building!</Button>
-          <p>Take a tour of the landing page</p>
-          <Button onClick={startTour}>Take Tour</Button> {/* Button to start the tour */}
-      </Banner>
-     </Sections>
+    </Banner>
+    </Sections>
 
-      {/* Render the tour if showTour is true */}
-     {showTour && <LandingPageTour onClose={closeTour} Step={handleBannerStep} />}
+    <TourButton
+      icon={<HelpCircle />}
+      onClick={startTour}>
+    </TourButton>
+
+    {/* Render the tour if showTour is true */}
+    {showTour && <LandingPageTour onClose={closeTour} Step={handleBannerStep} />}
     </Main>
   )
 }

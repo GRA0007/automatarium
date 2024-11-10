@@ -5,7 +5,7 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 
 import { Button, Logo, Dropdown } from '/src/components'
 import { useEvent } from '/src/hooks'
-import { useProjectStore, useProjectsStore } from '/src/stores'
+import { useProjectStore, useProjectsStore, useModuleStore, useModulesStore } from '/src/stores'
 import { dispatchCustomEvent } from '/src/util/events'
 
 import {
@@ -77,6 +77,12 @@ const Menubar = ({ isSaving }: { isSaving: boolean }) => {
   const upsertProject = useProjectsStore(s => s.upsertProject)
   const deleteProject = useProjectsStore(s => s.deleteProject)
 
+  // Modules
+  const upsertModuleProject = useModuleStore(s => s.upsertProject)
+  const upsertModule = useModulesStore(s => s.upsertModule)
+  const currentModule = useModuleStore(s => s.module)
+  // const setLabLastSaveDate = useLabStore(s => s.setLastSaveDate)
+
   const handleEditProjectName = () => {
     setTitleValue(projectName ?? '')
     setEditingTitle(true)
@@ -87,6 +93,15 @@ const Menubar = ({ isSaving }: { isSaving: boolean }) => {
     const project = useProjectStore.getState().project
     upsertProject({ ...project, meta: { ...project.meta, dateEdited: new Date().getTime() } })
     setLastSaveDate(new Date().getTime())
+  }
+
+  const saveLabProject = () => {
+    const project = useProjectStore.getState().project
+    upsertModuleProject({ ...project, meta: { ...project.meta, dateEdited: new Date().getTime() } })
+  }
+
+  const saveLab = () => {
+    upsertModule(currentModule)
   }
 
   const handleSaveProjectName = () => {
@@ -112,7 +127,12 @@ const Menubar = ({ isSaving }: { isSaving: boolean }) => {
             const project = useProjectStore.getState().project
             const totalItems = project.comments.length + project.states.length + project.transitions.length
             if (totalItems > 0) {
-              saveProject()
+              if (currentModule != null) {
+                saveLabProject()
+                saveLab()
+              } else {
+                saveProject()
+              }
             } else {
               deleteProject(project._id)
             }
@@ -131,6 +151,7 @@ const Menubar = ({ isSaving }: { isSaving: boolean }) => {
                   onBlur={handleSaveProjectName}
                   onKeyDown={e => e.code === 'Enter' && handleSaveProjectName()}
                   ref={titleRef}
+                  disabled={currentModule != null}
                 />
                   )
                 : (

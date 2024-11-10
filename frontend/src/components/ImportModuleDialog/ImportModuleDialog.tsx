@@ -1,25 +1,29 @@
 import { useEffect, useState } from 'react'
+import { useEvent } from '/src/hooks'
 import { NavigateFunction } from 'react-router-dom'
 
-import { useEvent } from '/src/hooks'
-import { promptLoadFile, urlLoadFile } from '/src/hooks/useActions'
-import { useProjectStore, useProjectsStore } from '/src/stores'
+import { promptLoadModuleFile, urlLoadModuleFile } from '/src/hooks/useActions'
+import { useModuleStore, useModulesStore, useProjectStore } from '/src/stores'
 
-import { ErrorText, ImportButtonWrapper } from './importDialogStyle'
+import { ErrorText, ImportButtonWrapper } from './importModuleDialogStyle'
 import { Button, Input, Modal, Spinner } from '/src/components'
 import { Container } from '/src/pages/Share/shareStyle'
-import { encodeData } from '/src/util/encoding'
-import { StoredProject } from '/src/stores/useProjectStore'
+import { StoredModule } from '/src/stores/useModuleStore'
+import { encodeModule } from '/src/util/encoding'
 
 type ImportDialogProps = {
-  // This needs to be passed in from the main page
-  navigateFunction: NavigateFunction
-}
+    // This needs to be passed in from the main page
+    navigateFunction: NavigateFunction
+  }
 
-const ImportDialog = ({ navigateFunction }: ImportDialogProps) => {
+const ImportModuleDialog = ({ navigateFunction }: ImportDialogProps) => {
   const navigate = navigateFunction
   const setProject = useProjectStore(s => s.set)
-  const upsertProject = useProjectsStore(s => s.upsertProject)
+  const setModule = useModuleStore(s => s.setModule)
+  const getModuleProject = useModuleStore(s => s.getProject)
+  const upsertModule = useModulesStore(s => s.upsertModule)
+  const showModuleWindow = useModuleStore(s => s.showModuleWindow)
+  const setShowModuleWindow = useModuleStore(s => s.setShowModuleWindow)
 
   const [modalOpen, setModalOpen] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -40,7 +44,7 @@ const ImportDialog = ({ navigateFunction }: ImportDialogProps) => {
     return () => clearTimeout(timeout)
   }, [urlError])
 
-  useEvent('modal:import', () => {
+  useEvent('modal:importModule', () => {
     setModalOpen(true)
     setLoading(false)
     setRawError(false)
@@ -56,60 +60,68 @@ const ImportDialog = ({ navigateFunction }: ImportDialogProps) => {
     setUrlError(false)
   }
 
-  const onData = (project: StoredProject) => {
-    setProject(project)
-    upsertProject(project)
+  const onData = (module: StoredModule) => {
+    setModule(module)
+    upsertModule(module)
+  }
+
+  const loadModule = () => {
+    setProject(getModuleProject(0))
+    if (showModuleWindow === false) {
+      setShowModuleWindow(true)
+    }
+    navigate('/editor')
   }
 
   return loading
     ? <Container><Spinner /></Container>
     : <Modal
-      title='Import Project'
-      description='Have an existing project?'
+      title='Import Module'
+      description='Have an existing module?'
       isOpen={modalOpen}
       onClose={resetModal}
       actions={<Button secondary onClick={resetModal}>Close</Button>}
-    >
-      <ImportButtonWrapper>
-        From your computer
-        <Button
-          disabled={loading}
-          onClick={() => {
-            setLoading(true)
-            promptLoadFile(
-              onData,
-              'The file format provided is not valid. Please only open Automatarium .json, Automatarium .ao or JFLAP .jff file formats.',
-              '.jff,.json,.ao',
-              () => {
-                resetModal()
-                navigate('/editor')
-              },
-              () => {
-                setLoading(false)
-              }
-            )
-          }}
-        >
-          Browse...
-        </Button>
-      </ImportButtonWrapper>
-      <hr />
-      From URL (raw/plaintext)
+  >
+    <ImportButtonWrapper>
+      From your computer
+      <Button
+        disabled={loading}
+        onClick={() => {
+          setLoading(true)
+          promptLoadModuleFile(
+            onData,
+            'The file format provided is not valid. Please only open Automatarium .aom',
+            '.aom',
+            () => {
+              resetModal()
+              loadModule()
+            },
+            () => {
+              setLoading(false)
+            }
+          )
+        }}
+      >
+        Browse...
+      </Button>
+    </ImportButtonWrapper>
+    <hr />
+      From URL (module/plaintext)
       <ImportButtonWrapper>
         <Input
           value={urlValue}
           onChange={e => setUrlValue(e.target.value)}
-          placeholder={'www.example.com/paste/raw/CoolFSA.ao'}
+          placeholder={'www.example.com/paste/module/CoolFSA.aom'}
         />
         <Button
           disabled={loading}
           onClick={() => {
             if (urlValue.length > 0) {
               setLoading(true)
-              urlLoadFile(
+              urlLoadModuleFile(
                 urlValue,
                 onData,
-                'Automatarium failed to load a project from provided URL.',
+                'Automatarium failed to load a module from provided URL.',
                 () => {
                   resetModal()
                   navigate('/editor')
@@ -126,7 +138,7 @@ const ImportDialog = ({ navigateFunction }: ImportDialogProps) => {
       </ImportButtonWrapper>
       {urlError ? <ErrorText>No URL specified!</ErrorText> : <></>}
       <hr />
-      From raw data (from the export or your project file)
+      From raw data (from the export or your module file)
       <ImportButtonWrapper>
         <Input
           value={rawValue}
@@ -137,16 +149,16 @@ const ImportDialog = ({ navigateFunction }: ImportDialogProps) => {
           if (rawValue.length > 0) {
             const data = rawValue[0] === '{'
               // This is a json file. It might not fit on the URL
-              ? encodeData(JSON.parse(rawValue))
+              ? encodeModule(JSON.parse(rawValue))
               : rawValue
-            navigate(`/share/raw/${data}`)
+            navigate(`/share/module/${data}`)
           } else {
             setRawError(true)
           }
         }}>Load</Button>
       </ImportButtonWrapper>
       {rawError ? <ErrorText>Can't load nothing!</ErrorText> : <></>}
-    </Modal >
+  </Modal>
 }
 
-export default ImportDialog
+export default ImportModuleDialog
